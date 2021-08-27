@@ -4,6 +4,14 @@
 
 using namespace std;
 
+/**
+ * Next steps:
+ * 
+ * - Use vector<T> rem, instead of int rem;
+ * - For that I need `add()` function
+ * - For that `add()` function I need to use reversed order in vector<T> data in `add()`, `lessThan()` and `divideChunk()`;
+ */
+
 template <typename T>
 bool lessThan(const vector<T> &left, const vector<T> &right)
 {
