@@ -9,15 +9,15 @@ using namespace std;
  * 
  * - Use vector<T> rem, instead of int rem;
  * - For that I need `add()` function
- * - For that `add()` function I need to use reversed order in vector<T> data in `add()`, `lessThan()` and `divideChunk()`;
  */
 
 template <typename T>
-bool lessThan(const vector<T> &left, const vector<T> &right)
+bool operator<(const vector<T> &left, const vector<T> &right)
 {
   if (left.size() == right.size())
   {
-    for (int i{}; i < left.size(); ++i)
+    int i{(int)left.size()};
+    while (i--)
     {
       if (left[i] != right[i])
         return left[i] < right[i];
@@ -29,22 +29,22 @@ bool lessThan(const vector<T> &left, const vector<T> &right)
 }
 
 template <typename T>
-vector<T> add(vector<T> &out, const vector<T> &left, const vector<T> &right)
+vector<T> operator+(const vector<T> &left, const vector<T> &right)
 {
-  if (lessThan(left, right))
+  if (left < right)
   {
-    add(out, right, left);
+    return (right + left);
   }
   else
   {
-    int i{static_cast<int>(left.size())};
+    vector<T> out{};
     int carry{};
-    while (i--)
+    for (int i{}; i < left.size(); ++i)
     {
+      if (out.size() <= i)
+        out.push_back(0);
       if (i < right.size())
       {
-        if (out.size() <= i)
-          out.push_back(0);
         out[i] = carry + left[i] + right[i];
         carry = out[i] / 10;
         out[i] %= 10;
@@ -52,25 +52,27 @@ vector<T> add(vector<T> &out, const vector<T> &left, const vector<T> &right)
       else
       {
         out[i] = left[i] + carry;
-        carry = 0;
+        carry = out[i] / 10;
+        out[i] %= 10;
       }
     }
     if (carry)
     {
+      out.push_back(carry);
     }
+    return out;
   }
-  return out;
 }
 
 template <typename T>
 T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
 {
-  if (lessThan(dividend, divisor))
+  if (dividend < divisor)
     return 0;
   else
   {
-    int i{}, j{}, quot{}, rem{};
-    while (i < dividend.size())
+    int i{(int)dividend.size() - 1}, j{(int)divisor.size() - 1}, quot{}, rem{};
+    while (i >= 0)
     {
       rem *= 10;
       int currQuot{((dividend[i] + rem) / divisor[j])};
@@ -81,7 +83,7 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
           if (quot > currQuot)
           {
             --quot;
-            rem += divisor[j - 1];
+            rem += divisor[j + 1];
             continue;
           }
         }
@@ -89,35 +91,86 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
           quot = currQuot;
 
         rem = (dividend[i] + rem) % divisor[j];
-        ++j;
+        --j;
       }
       else
       {
         if (quot)
         {
           --quot;
-          rem += divisor[j - 1];
-          --j;
+          rem += divisor[j + 1];
+          ++j;
           continue;
         }
         else
           rem += dividend[i];
       }
-      ++i;
+      --i;
     }
     return quot;
   };
 }
 
+void testAddition()
+{
+  cout << "Test Addition...";
+  {
+    vector<int> left{1}, right{2};
+    assert((left + right) == vector<int>{3});
+    assert((right + left) == vector<int>{3});
+  }
+  {
+    vector<int> left{9}, right{1};
+    assert(((left + right) == vector<int>{0, 1}));
+    assert(((right + left) == vector<int>{0, 1}));
+  }
+  {
+    vector<int> left{4, 8}, right{5, 0, 1};
+    assert(((left + right) == vector<int>{9, 8, 1}));
+    assert(((right + left) == vector<int>{9, 8, 1}));
+  }
+  {
+    vector<int> left{6}, right{7, 9, 9};
+    assert(((left + right) == vector<int>{3, 0, 0, 1}));
+    assert(((right + left) == vector<int>{3, 0, 0, 1}));
+  }
+  cout << "OK\n";
+}
+void testLessThan()
+{
+  cout << "Test LessThan...";
+  {
+    vector<int> left{0}, right{1};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    vector<int> left{9}, right{1, 1};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    vector<int> left{2, 1}, right{1, 2};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  cout << "OK\n";
+}
 void testDivideChunk()
 {
   cout << "Test DivideChunk...";
   {
-    vector<int> dividend{1, 2, 4}, divisor{2, 3};
+    vector<int> dividend{4, 2, 1}, divisor{3, 2};
     assert((divideChunk(dividend, divisor) == 5));
   }
   {
-    vector<int> dividend{1, 0, 0}, divisor{1, 1};
+    vector<int> dividend{0, 0, 1}, divisor{1, 1};
     assert((divideChunk(dividend, divisor) == 9));
   }
   {
@@ -133,31 +186,15 @@ void testDivideChunk()
     assert((divideChunk(dividend, divisor) == 0));
   }
   {
-    vector<int> dividend{1, 2, 3, 4}, divisor{2, 3, 4};
+    vector<int> dividend{4, 3, 2, 1}, divisor{4, 3, 2};
     assert((divideChunk(dividend, divisor) == 5));
-  }
-  cout << "OK\n";
-}
-void testAdd()
-{
-  cout << "Test Add...";
-  {
-    vector<int> out{}, left{1}, right{2};
-    add(out, left, right);
-    assert(out == vector<int>{3});
   }
   cout << "OK\n";
 }
 
 int main()
 {
+  testLessThan();
+  testAddition();
   testDivideChunk();
-  testAdd();
-  vector<int> out{}, left{9}, right{2};
-  add(out, left, right);
-  for (auto el : out)
-  {
-    cout << el << ' ';
-  }
-  cout << '\n';
 }
