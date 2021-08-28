@@ -9,6 +9,8 @@ using namespace std;
  * 
  * - Use vector<T> rem, instead of int rem;
  * - For that I need `add()` function
+ * - Overload `operator+(vector<T>, int)
+ * - Add function `divideBySingleNumber`
  */
 
 template <typename T>
