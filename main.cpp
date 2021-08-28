@@ -13,6 +13,33 @@ using namespace std;
  * - Add function `divideBySingleNumber`
  */
 
+// Declare functions
+template <typename T>
+vector<T> fromIntegralType(const T &num);
+template <typename T>
+bool operator<(const vector<T> &left, const vector<T> &right);
+template <typename T>
+vector<T> operator+(const vector<T> &left, const vector<T> &right);
+template <typename T>
+vector<T> operator+(const vector<T> &left, const T &right);
+template <typename T>
+vector<T> operator+(const T &left, const vector<T> &right);
+template <typename T>
+T divideChunk(const vector<T> &dividend, const vector<T> &divisor);
+
+template <typename T>
+vector<T> fromIntegralType(const T &num)
+{
+  int _num{num};
+  vector<T> res{};
+  while (_num)
+  {
+    res.push_back(_num % 10);
+    _num /= 10;
+  }
+  return res;
+}
+
 template <typename T>
 bool operator<(const vector<T> &left, const vector<T> &right)
 {
@@ -64,6 +91,18 @@ vector<T> operator+(const vector<T> &left, const vector<T> &right)
     }
     return out;
   }
+}
+
+template <typename T>
+vector<T> operator+(const vector<T> &left, const T &right)
+{
+  return left + fromIntegralType(right);
+}
+
+template <typename T>
+vector<T> operator+(const T &left, const vector<T> &right)
+{
+  return right + left;
 }
 
 template <typename T>
@@ -193,10 +232,19 @@ void testDivideChunk()
   }
   cout << "OK\n";
 }
+void testFromIntegralType()
+{
+  cout << "From Integral type...";
+  assert((fromIntegralType(1) == vector<int>{1}));
+  assert((fromIntegralType(12) == vector<int>{2, 1}));
+  assert((fromIntegralType(1200) == vector<int>{0, 0, 2, 1}));
+  cout << "OK\n";
+}
 
 int main()
 {
   testLessThan();
   testAddition();
   testDivideChunk();
+  testFromIntegralType();
 }
