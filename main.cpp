@@ -14,6 +14,8 @@ using namespace std;
 // Declare functions
 template <typename T>
 vector<T> fromIntegralType(const T &num);
+template <typename T>
+T toIntegralType(const vector<T> &num);
 
 template <typename T>
 bool operator<(const vector<T> &left, const vector<T> &right);
@@ -44,6 +46,18 @@ vector<T> fromIntegralType(const T &num)
   {
     res.push_back(_num % 10);
     _num /= 10;
+  }
+  return res;
+}
+
+template <typename T>
+T toIntegralType(const vector<T> &num)
+{
+  T res{};
+  for (auto i{num.rbegin()}; i != num.rend(); ++i)
+  {
+    res *= 10;
+    res += *i;
   }
   return res;
 }
@@ -380,6 +394,23 @@ void testFromIntegralType()
   assert((fromIntegralType(1200) == vector<int>{0, 0, 2, 1}));
   cout << "OK\n";
 }
+void testToIntegralType()
+{
+  cout << "Test To Integral type...";
+  {
+    vector<int> num{1};
+    assert(toIntegralType(num) == 1);
+  }
+  {
+    vector<int> num{2, 3, 1};
+    assert(toIntegralType(num) == 132);
+  }
+  {
+    vector<int> num{0, 0, 0, 1};
+    assert(toIntegralType(num) == 1000);
+  }
+  cout << "OK\n";
+}
 
 int main()
 {
@@ -388,4 +419,5 @@ int main()
   testDivideBySingleNumber();
   testDivideChunk();
   testFromIntegralType();
+  testToIntegralType();
 }
