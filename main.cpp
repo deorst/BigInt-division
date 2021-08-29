@@ -8,7 +8,7 @@ using namespace std;
  * Next steps:
  * 
  * - Use vector<T> rem, instead of int rem;
- * - For that I need `add()` function
+ * - For that need to overload `operator-`;
  */
 
 // Declare functions
