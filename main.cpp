@@ -9,8 +9,6 @@ using namespace std;
  * 
  * - Use vector<T> rem, instead of int rem;
  * - For that I need `add()` function
- * - Overload `operator+(vector<T>, int)
- * - Add function `divideBySingleNumber`
  */
 
 // Declare functions
@@ -366,6 +364,11 @@ void testDivideBySingleNumber()
     vector<int> dividend{0, 1, 1};
     int divisor{9};
     assert((divideBySingleNumber(dividend, divisor) == vector<int>{2, 1}));
+  }
+  {
+    vector<int> dividend{8};
+    int divisor{9};
+    assert((divideBySingleNumber(dividend, divisor) == vector<int>{}));
   }
   cout << "OK\n";
 }
