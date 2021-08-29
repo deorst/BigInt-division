@@ -16,14 +16,24 @@ using namespace std;
 // Declare functions
 template <typename T>
 vector<T> fromIntegralType(const T &num);
+
 template <typename T>
 bool operator<(const vector<T> &left, const vector<T> &right);
+template <typename T>
+bool operator<(const vector<T> &left, const T &right);
+template <typename T>
+bool operator<(const T &left, const vector<T> &right);
+
 template <typename T>
 vector<T> operator+(const vector<T> &left, const vector<T> &right);
 template <typename T>
 vector<T> operator+(const vector<T> &left, const T &right);
 template <typename T>
 vector<T> operator+(const T &left, const vector<T> &right);
+
+template <typename T>
+vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor);
+
 template <typename T>
 T divideChunk(const vector<T> &dividend, const vector<T> &divisor);
 
@@ -55,6 +65,18 @@ bool operator<(const vector<T> &left, const vector<T> &right)
   }
   else
     return (left.size() < right.size());
+}
+
+template <typename T>
+bool operator<(const vector<T> &left, const T &right)
+{
+  return left < fromIntegralType(right);
+}
+
+template <typename T>
+bool operator<(const T &left, const vector<T> &right)
+{
+  return fromIntegralType(left) < right;
 }
 
 template <typename T>
@@ -106,6 +128,29 @@ vector<T> operator+(const T &left, const vector<T> &right)
 }
 
 template <typename T>
+vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor)
+{
+  vector<T> quot{};
+  T rem{};
+  for (int i{(int)dividend.size() - 1}; i >= 0; --i)
+  {
+    int currQuot{(dividend[i] + rem) / divisor};
+    if (currQuot)
+    {
+      quot.push_back(currQuot);
+      rem = (dividend[i] + rem) % divisor;
+    }
+    else
+    {
+      rem += dividend[i];
+    }
+    rem *= 10;
+  }
+  reverse(quot.begin(), quot.end());
+  return quot;
+}
+
+template <typename T>
 T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
 {
   if (dividend < divisor)
@@ -152,34 +197,10 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
   };
 }
 
-void testAddition()
-{
-  cout << "Test Addition...";
-  {
-    vector<int> left{1}, right{2};
-    assert((left + right) == vector<int>{3});
-    assert((right + left) == vector<int>{3});
-  }
-  {
-    vector<int> left{9}, right{1};
-    assert(((left + right) == vector<int>{0, 1}));
-    assert(((right + left) == vector<int>{0, 1}));
-  }
-  {
-    vector<int> left{4, 8}, right{5, 0, 1};
-    assert(((left + right) == vector<int>{9, 8, 1}));
-    assert(((right + left) == vector<int>{9, 8, 1}));
-  }
-  {
-    vector<int> left{6}, right{7, 9, 9};
-    assert(((left + right) == vector<int>{3, 0, 0, 1}));
-    assert(((right + left) == vector<int>{3, 0, 0, 1}));
-  }
-  cout << "OK\n";
-}
 void testLessThan()
 {
   cout << "Test LessThan...";
+  // vector<T> < vector<T>
   {
     vector<int> left{0}, right{1};
     assert(left < right);
@@ -200,6 +221,107 @@ void testLessThan()
     assert(!(right < left));
     assert(!(left < left));
     assert(!(right < right));
+  }
+  {
+    vector<int> left{2, 1}, right{2, 1};
+    assert(!(left < right));
+    assert(!(right < left));
+  }
+  // vector<T> < T
+  {
+    vector<int> left{0};
+    int right{1};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    vector<int> left{9};
+    int right{11};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    vector<int> left{2, 1};
+    int right{21};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    vector<int> left{2, 1};
+    int right{12};
+    assert(!(left < right));
+    assert(!(right < left));
+  }
+  // T < vector<T>
+  {
+    int left{0};
+    vector<int> right{1};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    int left{9};
+    vector<int> right{1, 1};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    int left{12};
+    vector<int> right{1, 2};
+    assert(left < right);
+    assert(!(right < left));
+    assert(!(left < left));
+    assert(!(right < right));
+  }
+  {
+    int left{12};
+    vector<int> right{2, 1};
+    assert(!(left < right));
+    assert(!(right < left));
+  }
+  cout << "OK\n";
+}
+void testAddition()
+{
+  cout << "Test Addition...";
+  // vector<T> + vector<T>
+  {
+    vector<int> left{1}, right{2};
+    assert((left + right) == vector<int>{3});
+    assert((right + left) == vector<int>{3});
+  }
+  {
+    vector<int> left{9}, right{1};
+    assert(((left + right) == vector<int>{0, 1}));
+    assert(((right + left) == vector<int>{0, 1}));
+  }
+  {
+    vector<int> left{4, 8}, right{5, 0, 1};
+    assert(((left + right) == vector<int>{9, 8, 1}));
+    assert(((right + left) == vector<int>{9, 8, 1}));
+  }
+  {
+    vector<int> left{6}, right{7, 9, 9};
+    assert(((left + right) == vector<int>{3, 0, 0, 1}));
+    assert(((right + left) == vector<int>{3, 0, 0, 1}));
+  }
+
+  // vector<T> + T
+  {
+    vector<int> left{6};
+    int right{997};
+    assert(((left + right) == vector<int>{3, 0, 0, 1}));
+    assert(((right + left) == vector<int>{3, 0, 0, 1}));
   }
   cout << "OK\n";
 }
@@ -232,6 +354,21 @@ void testDivideChunk()
   }
   cout << "OK\n";
 }
+void testDivideBySingleNumber()
+{
+  cout << "Test Divide by Single Number...";
+  {
+    vector<int> dividend{7};
+    int divisor{3};
+    assert(divideBySingleNumber(dividend, divisor) == vector<int>{2});
+  }
+  {
+    vector<int> dividend{0, 1, 1};
+    int divisor{9};
+    assert((divideBySingleNumber(dividend, divisor) == vector<int>{2, 1}));
+  }
+  cout << "OK\n";
+}
 void testFromIntegralType()
 {
   cout << "From Integral type...";
@@ -245,6 +382,7 @@ int main()
 {
   testLessThan();
   testAddition();
+  testDivideBySingleNumber();
   testDivideChunk();
   testFromIntegralType();
 }
