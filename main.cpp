@@ -11,7 +11,7 @@ using namespace std;
  * - For that need to overload `operator-`;
  */
 
-// Declare functions
+// Declarations
 template <typename T>
 vector<T> fromIntegralType(const T &num);
 template <typename T>
@@ -32,11 +32,19 @@ template <typename T>
 vector<T> operator+(const T &left, const vector<T> &right);
 
 template <typename T>
+vector<T> operator-(const vector<T> &left, const vector<T> &right);
+// template <typename T>
+// vector<T> operator-(const vector<T> &left, const T &right);
+// template <typename T>
+// vector<T> operator-(const T &left, const vector<T> &right);
+
+template <typename T>
 vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor);
 
 template <typename T>
 T divideChunk(const vector<T> &dividend, const vector<T> &divisor);
 
+// Definitions
 template <typename T>
 vector<T> fromIntegralType(const T &num)
 {
@@ -137,6 +145,39 @@ template <typename T>
 vector<T> operator+(const T &left, const vector<T> &right)
 {
   return right + left;
+}
+
+template <typename T>
+vector<T> operator-(const vector<T> &left, const vector<T> &right)
+{
+  // We assume left >= right
+  vector<T> out{};
+  int borrow{};
+  for (int i{}; i < right.size(); ++i)
+  {
+    out.push_back(0);
+    if ((left[i] - borrow) >= right[i])
+    {
+      out[i] = left[i] - borrow - right[i];
+      borrow = 0;
+    }
+    else
+    {
+      out[i] = left[i] - borrow + 10 - right[i];
+      borrow = 1;
+    }
+  }
+
+  for (int i{(int)right.size()}; i < left.size(); ++i)
+  {
+    if (left[i] - borrow)
+    {
+      out.push_back(0);
+      out[i] = left[i] - borrow;
+      borrow = 0;
+    }
+  }
+  return out;
 }
 
 template <typename T>
@@ -337,6 +378,23 @@ void testAddition()
   }
   cout << "OK\n";
 }
+void testSubtraction()
+{
+  cout << "Test Subtraction...";
+  {
+    vector<int> left{2}, right{1};
+    assert((left - right) == vector<int>{1});
+  }
+  {
+    vector<int> left{0, 1}, right{1};
+    assert((left - right) == vector<int>{9});
+  }
+  {
+    vector<int> left{3, 2, 1}, right{2, 4};
+    assert(((left - right) == vector<int>{1, 8}));
+  }
+  cout << "OK\n";
+}
 void testDivideChunk()
 {
   cout << "Test DivideChunk...";
@@ -416,6 +474,7 @@ int main()
 {
   testLessThan();
   testAddition();
+  testSubtraction();
   testDivideBySingleNumber();
   testDivideChunk();
   testFromIntegralType();
