@@ -47,6 +47,9 @@ vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor);
 template <typename T>
 T divideChunk(const vector<T> &dividend, const vector<T> &divisor);
 
+template <typename T>
+void trim(vector<T> &x);
+
 // Definitions
 template <typename T>
 vector<T> fromIntegralType(const T &num)
@@ -223,6 +226,18 @@ vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor)
   }
   reverse(quot.begin(), quot.end());
   return quot;
+}
+
+template <typename T>
+void trim(vector<T> &x)
+{
+  int size{(int)x.size()};
+  while (size--)
+  {
+    if (x[size])
+      break;
+  }
+  x.resize(size + 1);
 }
 
 template <typename T>
@@ -510,6 +525,16 @@ void testToIntegralType()
   }
   cout << "OK\n";
 }
+void testTrim()
+{
+  cout << "Test Trim...";
+  {
+    vector<int> x{0, 0, 1, 0};
+    trim(x);
+    assert((x == vector<int>{0, 0, 1}));
+  }
+  cout << "OK\n";
+}
 
 int main()
 {
@@ -521,4 +546,5 @@ int main()
   testDivideChunk();
   testFromIntegralType();
   testToIntegralType();
+  testTrim();
 }
