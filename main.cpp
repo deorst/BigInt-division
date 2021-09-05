@@ -39,6 +39,9 @@ vector<T> operator-(const vector<T> &left, const vector<T> &right);
 // vector<T> operator-(const T &left, const vector<T> &right);
 
 template <typename T>
+vector<T> operator*(const vector<T> &left, const vector<T> &right);
+
+template <typename T>
 vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor);
 
 template <typename T>
@@ -179,7 +182,26 @@ vector<T> operator-(const vector<T> &left, const vector<T> &right)
   }
   return out;
 }
-
+template <typename T>
+vector<T> operator*(const vector<T> &left, const vector<T> &right)
+{
+  vector<T> out{};
+  for (int i{}; i < right.size(); ++i)
+  {
+    int carry{};
+    for (int j{}; j < left.size(); ++j)
+    {
+      if (out.size() <= i + j)
+        out.push_back(0);
+      out[i + j] += right[i] * left[j] + carry;
+      carry = out[i + j] / 10;
+      out[i + j] %= 10;
+    }
+    if (carry)
+      out.push_back(carry);
+  }
+  return out;
+}
 template <typename T>
 vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor)
 {
@@ -395,6 +417,25 @@ void testSubtraction()
   }
   cout << "OK\n";
 }
+void testMultiplication()
+{
+  cout << "Test Multiplication...";
+  {
+    vector<int> left{1}, right{2};
+    assert(left * right == vector<int>{2});
+    assert(right * left == vector<int>{2});
+  }
+  {
+    vector<int> left{1, 1}, right{5, 4, 2};
+    assert((left * right == vector<int>{5, 9, 6, 2}));
+    assert((right * left == vector<int>{5, 9, 6, 2}));
+  }
+  {
+    vector<int> left{2, 1}, right{7, 5, 4};
+    assert((left * right == vector<int>{4, 8, 4, 5}));
+  }
+  cout << "OK\n";
+}
 void testDivideChunk()
 {
   cout << "Test DivideChunk...";
@@ -475,6 +516,7 @@ int main()
   testLessThan();
   testAddition();
   testSubtraction();
+  testMultiplication();
   testDivideBySingleNumber();
   testDivideChunk();
   testFromIntegralType();
