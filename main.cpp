@@ -8,7 +8,6 @@ using namespace std;
  * Next steps:
  * 
  * - Use vector<T> rem, instead of int rem;
- * - For that need to overload `operator-`;
  */
 
 // Declarations
@@ -215,16 +214,17 @@ vector<T> divideBySingleNumber(const vector<T> &dividend, const T &divisor)
     int currQuot{(dividend[i] + rem) / divisor};
     if (currQuot)
     {
-      quot.push_back(currQuot);
       rem = (dividend[i] + rem) % divisor;
     }
     else
     {
       rem += dividend[i];
     }
+    quot.push_back(currQuot);
     rem *= 10;
   }
   reverse(quot.begin(), quot.end());
+  trim(quot);
   return quot;
 }
 
@@ -497,6 +497,11 @@ void testDivideBySingleNumber()
     vector<int> dividend{8};
     int divisor{9};
     assert((divideBySingleNumber(dividend, divisor) == vector<int>{}));
+  }
+  {
+    vector<int> dividend{0, 1};
+    int divisor{1};
+    assert((divideBySingleNumber(dividend, divisor) == vector<int>{0, 1}));
   }
   cout << "OK\n";
 }
