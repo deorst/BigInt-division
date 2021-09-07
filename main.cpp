@@ -6,7 +6,7 @@ using namespace std;
 
 /**
  * Next steps:
- * 
+ * - Use `divideChunk` for division any numbers. 
  */
 
 // Declarations
