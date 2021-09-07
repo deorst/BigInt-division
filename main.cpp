@@ -7,7 +7,6 @@ using namespace std;
 /**
  * Next steps:
  * 
- * - Use vector<T> rem, instead of int rem;
  */
 
 // Declarations
@@ -247,11 +246,13 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
     return 0;
   else
   {
-    int i{(int)dividend.size() - 1}, j{(int)divisor.size() - 1}, quot{}, rem{};
+    int i{(int)dividend.size() - 1}, j{(int)divisor.size() - 1}, quot{};
+    vector<int> rem{};
     while (i >= 0)
     {
-      rem *= 10;
-      int currQuot{((dividend[i] + rem) / divisor[j])};
+      rem = rem * vector<int>{0, 1};
+      trim(rem);
+      int currQuot{toIntegralType(divideBySingleNumber((rem + dividend[i]), divisor[j]))};
       if (currQuot)
       {
         if (quot)
@@ -259,14 +260,14 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
           if (quot > currQuot)
           {
             --quot;
-            rem += divisor[j + 1];
+            rem = rem + divisor[j + 1];
             continue;
           }
         }
         else
           quot = currQuot;
 
-        rem = (dividend[i] + rem) % divisor[j];
+        rem = dividend[i] + rem - fromIntegralType(divisor[j] * quot);
         --j;
       }
       else
@@ -274,12 +275,12 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
         if (quot)
         {
           --quot;
-          rem += divisor[j + 1];
+          rem = rem + divisor[j + 1];
           ++j;
           continue;
         }
         else
-          rem += dividend[i];
+          rem = rem + dividend[i];
       }
       --i;
     }
