@@ -260,6 +260,13 @@ T divideChunk(const vector<T> &dividend, const vector<T> &divisor)
           if (quot > currQuot)
           {
             --quot;
+            // Divide by 10
+            if (rem.size())
+            {
+              reverse(rem.begin(), rem.end());
+              rem.pop_back();
+              reverse(rem.begin(), rem.end());
+            }
             rem = rem + divisor[j + 1];
             continue;
           }
@@ -455,6 +462,14 @@ void testMultiplication()
 void testDivideChunk()
 {
   cout << "Test DivideChunk...";
+  {
+    vector<int> dividend{0, 2}, divisor{3};
+    assert((divideChunk(dividend, divisor) == 6));
+  }
+  {
+    vector<int> dividend{3, 2, 1}, divisor{3, 1};
+    assert((divideChunk(dividend, divisor) == 9));
+  }
   {
     vector<int> dividend{4, 2, 1}, divisor{3, 2};
     assert((divideChunk(dividend, divisor) == 5));
